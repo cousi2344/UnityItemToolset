@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c31bee17cadd5449fb2c54b77a3dbe, type: 3}
+  m_Name: Gladius
+  m_EditorClassIdentifier: 
+  itemName: Gladius
+  attributes:
+  - {fileID: 11400000, guid: 4f8c5aea1d3d1ad44abc5d36d1d92955, type: 2}
+  - {fileID: 11400000, guid: dc7f675075fd54549ae04483dc07a365, type: 2}

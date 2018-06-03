@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c31bee17cadd5449fb2c54b77a3dbe, type: 3}
+  m_Name: Iron Greaves
+  m_EditorClassIdentifier: 
+  itemName: Iron Greaves
+  attributes:
+  - {fileID: 11400000, guid: 1e189f1b92edb624288b63712c9c3344, type: 2}
+  - {fileID: 11400000, guid: b83d4908e526bdd45ac94f29c7814bfe, type: 2}
