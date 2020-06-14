@@ -10,7 +10,7 @@ using UnityEditor;
  *  Contains variables and methods that will need to be commonly accessible by most
  *  or all of the editor windows.
  */
-public class ItemSystemEditorBase : EditorWindow
+public abstract class ItemSystemEditorBase : BaseCustomEditorWindow
 {
 
     // list of ItemAttribute subclasses

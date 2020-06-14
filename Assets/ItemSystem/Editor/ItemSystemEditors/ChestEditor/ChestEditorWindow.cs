@@ -47,6 +47,16 @@ public class ChestEditorWindow : ItemSystemEditorBase {
         GetWindow<ChestEditorWindow>("Chest Editor");
     }
 
+    protected override void ConfigureWindow()
+    {
+        scrollableControl.enabled = true;
+    }
+
+    protected override void ConstructInnerWindow()
+    {
+
+    }
+
     // scans Assets folder for items that could be added to chests
     private void ScanForItems()
     {
@@ -141,7 +151,7 @@ public class ChestEditorWindow : ItemSystemEditorBase {
     }
 
     // update the user interface for the window
-    private void OnGUI()
+    protected override void DrawInnerWindow()
     {
         // if we haven't done a scan yet, do one
         if(possibleItems.Count == 0 || attribSubclassTypes.Count == 0)

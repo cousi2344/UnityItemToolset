@@ -48,6 +48,16 @@ public class ItemEditorWindow : ItemSystemEditorBase {
         GetWindow<ItemEditorWindow>("Item Editor");
     }
 
+    protected override void ConfigureWindow()
+    {
+        scrollableControl.enabled = true;
+    }
+
+    protected override void ConstructInnerWindow()
+    {
+
+    }
+
     /*
      * scans for attribute types and handles re-populating attribute checklist.
      */
@@ -122,7 +132,7 @@ public class ItemEditorWindow : ItemSystemEditorBase {
     /*
      * update user interface for the window.
      */
-    private void OnGUI()
+    protected override void DrawInnerWindow()
     {
         // if we haven't done a scan yet, do one
         if (attribSubclassTypes.Count == 0)
