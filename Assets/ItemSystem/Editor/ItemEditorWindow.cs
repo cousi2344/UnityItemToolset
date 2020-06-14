@@ -86,7 +86,7 @@ public class ItemEditorWindow : ItemSystemEditorBase {
                 // get the type of the attribute
                 System.Type attribType = attribSubclassTypes[j];
 
-                // use reflection to make a version of ScriptableObject.GetMethod that is specific to the type of the attrib
+                // use reflection to make a version of ScriptableObject.CreateInstance that is specific to the type of the attrib
                 // we need this because these types are not known at runtime, so we can't use generics directly
                 // credit to Tim Robinson: https://stackoverflow.com/questions/3555056/how-should-i-call-the-generic-function-without-knowing-the-type-at-compile-time?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
                 MethodInfo methodDefinition = typeof(ScriptableObject).GetMethod("CreateInstance", new System.Type[] { });
@@ -98,7 +98,7 @@ public class ItemEditorWindow : ItemSystemEditorBase {
             }
         }
 
-        // tell the inventory item about it's attributes
+        // tell the inventory item about its attributes
         newItem.attributes = attribsToAdd;
 
         // create a folder to put it in if it doesn't exist
@@ -135,7 +135,6 @@ public class ItemEditorWindow : ItemSystemEditorBase {
         switch(currentTab)
         {
             case CREATE_ITEM_TAB:
-                // create items tab
                 newItemName = EditorGUILayout.TextField("Item Name", newItemName);
 
                 // add each item in possibleItems as a toggle
@@ -158,8 +157,6 @@ public class ItemEditorWindow : ItemSystemEditorBase {
                 break;
 
             case EDIT_ITEM_TAB:
-                // edit items tab
-
                 foreach (Object obj in Selection.objects)
                 {
                     InventoryItem asItem = obj as InventoryItem;
