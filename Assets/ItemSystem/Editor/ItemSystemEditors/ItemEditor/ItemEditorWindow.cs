@@ -60,10 +60,8 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
         itemAttributeResource = GetResource<ItemAttributeResource>();
     }
 
-    /*
-     * scans for attribute types and handles re-populating attribute checklist.
-     */
-    private void Scan()
+    // Clear out and remake the list of item attributes that can be selected
+    private void RebuildAttribSelectionChecklist()
     {
         itemAttributeResource.ScanForItemAttributeTypes();
 
@@ -139,7 +137,7 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
         // if we haven't done a scan yet, do one
         if (attribSelectionChecklist.Count == 0)
         {
-            Scan();
+            RebuildAttribSelectionChecklist();
         }
 
         currentTab = GUILayout.Toolbar(currentTab, new string[] { "Create Items", "Edit Items" });

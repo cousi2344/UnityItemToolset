@@ -60,8 +60,8 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         itemResource = GetResource<ItemResource>();
     }
 
-    // scans Assets folder for items that could be added to chests
-    private void ScanForItems()
+    // Clear out and remake the list of items that can be selected
+    private void RebuildItemChecklist()
     {
         // empty out previous items -- don't want duplicates or items that no longer exist
         itemSelectionChecklist.Clear();
@@ -146,7 +146,7 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         // if we haven't done a scan yet, do one
         if(itemSelectionChecklist.Count == 0)
         {
-            ScanForItems();
+            RebuildItemChecklist();
         }
 
         // put button in top right corner to scan for items
@@ -154,7 +154,7 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         GUILayout.FlexibleSpace();
         if(GUILayout.Button("Rescan"))
         {
-            ScanForItems();
+            RebuildItemChecklist();
         }
         EditorGUILayout.EndHorizontal();
 
