@@ -10,18 +10,19 @@ using UnityEngine;
 public class ItemAttributeResource : EditorResource
 {
 
-    private List<System.Type> itemAttributeTypes = new List<System.Type>();
+    private List<System.Type> __itemAttributeTypes;
 
     public List<System.Type> ItemAttributeTypes
     {
         get
         {
-            if (itemAttributeTypes == null)
+            if (__itemAttributeTypes == null)
             {
+                __itemAttributeTypes = new List<System.Type>();
                 ScanForItemAttributeTypes();
             }
 
-            return itemAttributeTypes;
+            return __itemAttributeTypes;
         }
     }
 
@@ -36,7 +37,7 @@ public class ItemAttributeResource : EditorResource
     public void ScanForItemAttributeTypes()
     {
         // clear out any previous finds, in case they no longer exist in the project
-        itemAttributeTypes.Clear();
+        ItemAttributeTypes.Clear();
 
         // get all types relevant to the ItemAttribute class
         System.Type[] subclassTypeArray = Assembly.GetAssembly(typeof(ItemAttribute))
@@ -48,7 +49,7 @@ public class ItemAttributeResource : EditorResource
             if (t.IsSubclassOf(typeof(ItemAttribute)))
             {
                 // if it is, add the type to one list and its name to the other
-                itemAttributeTypes.Add(t);
+                ItemAttributeTypes.Add(t);
             }
         }
     }

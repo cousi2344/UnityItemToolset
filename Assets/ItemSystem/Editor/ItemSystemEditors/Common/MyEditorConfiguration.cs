@@ -28,6 +28,7 @@ public class MyEditorConfiguration
     {
         // add resources here
         AddResource(new ItemAttributeResource());
+        AddResource(new ItemResource());
 
     }
 

@@ -12,8 +12,8 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
     /**
      * Member vars for both methods of adding items
      */
-    // current list of InventoryItems that the editor knows about
-    List<InventoryItem> possibleItems = new List<InventoryItem>();
+
+    ItemResource itemResource;
 
     // flag determining if chests will be cleared out before adding the selected items
     bool clearChestsOnAdd = false;
@@ -57,32 +57,20 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
     protected override void ConstructInnerWindow()
     {
         itemAttributeResource = GetResource<ItemAttributeResource>();
+        itemResource = GetResource<ItemResource>();
     }
 
     // scans Assets folder for items that could be added to chests
     private void ScanForItems()
     {
         // empty out previous items -- don't want duplicates or items that no longer exist
-        possibleItems.Clear();
         itemSelectionChecklist.Clear();
 
-        // find string identifiers for all Assets that are of type InventoryItem
-        string[] itemGuids = AssetDatabase.FindAssets("t:InventoryItem");
-
         // use string identifiers to find the actual InventoryItem objects and add them to possibleItems
-        foreach (string guid in itemGuids)
+        foreach (InventoryItem item in itemResource.Items)
         {
-            InventoryItem item = AssetDatabase.LoadAssetAtPath<InventoryItem>(AssetDatabase.GUIDToAssetPath(guid));
-            possibleItems.Add(item);
             itemSelectionChecklist.Add(false); // all objects are initially not selected to go into the chest
         }
-    }
-
-    // does both the scans outlined in ScanForItems and ScanForAttribTypes
-    private void Scan()
-    {
-        ScanForItems();
-        itemAttributeResource.ScanForItemAttributeTypes();
     }
 
     // add all selected items to a single chest
@@ -98,12 +86,12 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         if (selectItemsManually)
         {
             // look at each item in possibleItems and check if it is selected
-            for (int i = 0; i < possibleItems.Count; i++)
+            for (int i = 0; i < itemResource.Items.Count; i++)
             {
                 if (itemSelectionChecklist[i])
                 {
                     // it's selected -- add it to the chest
-                    chest.AddToChest(possibleItems[i]);
+                    chest.AddToChest(itemResource.Items[i]);
                 }
             }
         }
@@ -117,7 +105,7 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
                 List<InventoryItem> matchingItems = new List<InventoryItem>();
 
                 // look through every inventory item we know about
-                foreach (InventoryItem item in possibleItems)
+                foreach (InventoryItem item in itemResource.Items)
                 {
                     // get that thing
                     System.Type selectedType = itemAttributeResource.ItemAttributeTypes[i];
@@ -156,9 +144,9 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
     protected override void DrawInnerWindow()
     {
         // if we haven't done a scan yet, do one
-        if(possibleItems.Count == 0 || itemAttributeResource.ItemAttributeTypes.Count == 0)
+        if(itemSelectionChecklist.Count == 0)
         {
-            Scan();
+            ScanForItems();
         }
 
         // put button in top right corner to scan for items
@@ -166,7 +154,7 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         GUILayout.FlexibleSpace();
         if(GUILayout.Button("Rescan"))
         {
-            Scan();
+            ScanForItems();
         }
         EditorGUILayout.EndHorizontal();
 
@@ -175,9 +163,9 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         if (selectItemsManually)
         {
             // add each item in possibleItems as a toggle
-            for (int i = 0; i < possibleItems.Count; i++)
+            for (int i = 0; i < itemResource.Items.Count; i++)
             {
-                itemSelectionChecklist[i] = EditorGUILayout.Toggle(possibleItems[i].itemName, itemSelectionChecklist[i]);
+                itemSelectionChecklist[i] = EditorGUILayout.Toggle(itemResource.Items[i].itemName, itemSelectionChecklist[i]);
 
             }
 
