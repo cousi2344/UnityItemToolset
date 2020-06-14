@@ -31,9 +31,9 @@ public abstract class BaseCustomEditorWindow : EditorWindow
         return true;
     }
 
-    public T GetExtension<T>() where T: EditorExtension
+    public T GetResource<T>() where T: EditorResource
     {
-        return MyEditorConfiguration.Instance.GetExtension<T>();
+        return MyEditorConfiguration.Instance.GetResource<T>();
     }
 
     public void OnInspectorUpdate()

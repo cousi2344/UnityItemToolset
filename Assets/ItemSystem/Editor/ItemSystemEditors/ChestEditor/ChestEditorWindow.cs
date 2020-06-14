@@ -8,7 +8,7 @@ using UnityEditor;
  * Custom Editor window for editing the contents of chests or other items that have
  * an inventory.
  */
-public class ChestEditorWindow : ItemSystemEditorBase {
+public class ChestEditorWindow : BaseCustomEditorWindow {
     /**
      * Member vars for both methods of adding items
      */
@@ -17,6 +17,8 @@ public class ChestEditorWindow : ItemSystemEditorBase {
 
     // flag determining if chests will be cleared out before adding the selected items
     bool clearChestsOnAdd = false;
+
+    ItemAttributeResource itemAttributeResource;
 
     /**
      * Member vars for selecting manually (picking each item one by one)
@@ -54,7 +56,7 @@ public class ChestEditorWindow : ItemSystemEditorBase {
 
     protected override void ConstructInnerWindow()
     {
-
+        itemAttributeResource = GetResource<ItemAttributeResource>();
     }
 
     // scans Assets folder for items that could be added to chests
@@ -80,7 +82,7 @@ public class ChestEditorWindow : ItemSystemEditorBase {
     private void Scan()
     {
         ScanForItems();
-        ScanForAttribTypes();
+        itemAttributeResource.ScanForItemAttributeTypes();
     }
 
     // add all selected items to a single chest
@@ -118,7 +120,7 @@ public class ChestEditorWindow : ItemSystemEditorBase {
                 foreach (InventoryItem item in possibleItems)
                 {
                     // get that thing
-                    System.Type selectedType = attribSubclassTypes[attribSelections[i]];
+                    System.Type selectedType = itemAttributeResource.ItemAttributeTypes[i];
 
                     foreach (ItemAttribute attrib in item.attributes)
                     {
@@ -154,7 +156,7 @@ public class ChestEditorWindow : ItemSystemEditorBase {
     protected override void DrawInnerWindow()
     {
         // if we haven't done a scan yet, do one
-        if(possibleItems.Count == 0 || attribSubclassTypes.Count == 0)
+        if(possibleItems.Count == 0 || itemAttributeResource.ItemAttributeTypes.Count == 0)
         {
             Scan();
         }
@@ -209,7 +211,7 @@ public class ChestEditorWindow : ItemSystemEditorBase {
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel("Item " + (i+1) + ":");
-                attribSelections[i] = GUILayout.SelectionGrid(attribSelections[i], attribNames.ToArray(), 5);
+                attribSelections[i] = GUILayout.SelectionGrid(attribSelections[i], itemAttributeResource.ItemAttributeNames.ToArray(), 5);
                 EditorGUILayout.EndHorizontal();
             }
 

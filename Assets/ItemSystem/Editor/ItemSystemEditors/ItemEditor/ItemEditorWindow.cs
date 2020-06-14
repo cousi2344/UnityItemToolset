@@ -7,7 +7,7 @@ using UnityEditor;
 /**
  * Custom Editor window for creating and/or editing items.
  */
-public class ItemEditorWindow : ItemSystemEditorBase {
+public class ItemEditorWindow : BaseCustomEditorWindow {
 
     /**
      * Member vars for general editor window control
@@ -37,6 +37,8 @@ public class ItemEditorWindow : ItemSystemEditorBase {
     // item that is currently selected for editing
     private InventoryItem selectedItem;
 
+    ItemAttributeResource itemAttributeResource;
+
 
     // list of flags corresponding to all atrributes that can be added to an item
     // true if the attrib has been selected and will be added
@@ -55,7 +57,7 @@ public class ItemEditorWindow : ItemSystemEditorBase {
 
     protected override void ConstructInnerWindow()
     {
-
+        itemAttributeResource = GetResource<ItemAttributeResource>();
     }
 
     /*
@@ -63,11 +65,11 @@ public class ItemEditorWindow : ItemSystemEditorBase {
      */
     private void Scan()
     {
-        ScanForAttribTypes();
+        itemAttributeResource.ScanForItemAttributeTypes();
 
         attribSelectionChecklist.Clear();
 
-        for(int i = 0; i < attribSubclassTypes.Count; i++)
+        for(int i = 0; i < itemAttributeResource.ItemAttributeTypes.Count; i++)
         {
             attribSelectionChecklist.Add(false);
         }
@@ -94,7 +96,7 @@ public class ItemEditorWindow : ItemSystemEditorBase {
             if (attribSelectionChecklist[j])
             {
                 // get the type of the attribute
-                System.Type attribType = attribSubclassTypes[j];
+                System.Type attribType = itemAttributeResource.ItemAttributeTypes[j];
 
                 // use reflection to make a version of ScriptableObject.CreateInstance that is specific to the type of the attrib
                 // we need this because these types are not known at runtime, so we can't use generics directly
@@ -135,7 +137,7 @@ public class ItemEditorWindow : ItemSystemEditorBase {
     protected override void DrawInnerWindow()
     {
         // if we haven't done a scan yet, do one
-        if (attribSubclassTypes.Count == 0)
+        if (attribSelectionChecklist.Count == 0)
         {
             Scan();
         }
@@ -148,9 +150,9 @@ public class ItemEditorWindow : ItemSystemEditorBase {
                 newItemName = EditorGUILayout.TextField("Item Name", newItemName);
 
                 // add each item in possibleItems as a toggle
-                for (int i = 0; i < attribNames.Count; i++)
+                for (int i = 0; i < itemAttributeResource.ItemAttributeTypes.Count; i++)
                 {
-                    attribSelectionChecklist[i] = EditorGUILayout.Toggle(attribNames[i], attribSelectionChecklist[i]);
+                    attribSelectionChecklist[i] = EditorGUILayout.Toggle(itemAttributeResource.ItemAttributeNames[i], attribSelectionChecklist[i]);
                 }
 
                 GUILayout.BeginHorizontal();

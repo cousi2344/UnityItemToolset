@@ -26,20 +26,16 @@ public class MyEditorConfiguration
 
     public void Setup()
     {
-        // add extensions here
-
-        //AddExtension(new HelloWorldEditorExtension()
-        //{
-        //    MyName = "Jake"
-        //});
+        // add resources here
+        AddResource(new ItemAttributeResource());
 
     }
 
-    protected List<EditorExtension> extensions = new List<EditorExtension>();
+    protected List<EditorResource> resources = new List<EditorResource>();
 
-    public T GetExtension<T>() where T: EditorExtension
+    public T GetResource<T>() where T: EditorResource
     {
-        foreach(var extension in extensions)
+        foreach(var extension in resources)
         {
             if (extension is T)
             {
@@ -50,13 +46,13 @@ public class MyEditorConfiguration
         return null;
     }
 
-    public void AddExtension(EditorExtension extension)
+    public void AddResource(EditorResource resource)
     {
-        extensions.Add(extension);
+        resources.Add(resource);
     }
 }
 
-public class EditorExtension
+public class EditorResource
 {
 
 }
