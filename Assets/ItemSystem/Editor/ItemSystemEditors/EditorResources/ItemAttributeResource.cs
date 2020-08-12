@@ -48,7 +48,7 @@ public class ItemAttributeResource : EditorResource
             // make sure that the given type is a subclass of ItemAttribute
             if (t.IsSubclassOf(typeof(ItemAttribute)))
             {
-                // if it is, add the type to one list and its name to the other
+                // if it is, add the type to the list
                 ItemAttributeTypes.Add(t);
             }
         }

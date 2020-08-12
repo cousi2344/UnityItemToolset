@@ -29,6 +29,7 @@ public class MyEditorConfiguration
         // add resources here
         AddResource(new ItemAttributeResource());
         AddResource(new ItemResource());
+        AddResource(new ChestResource());
 
     }
 
@@ -53,7 +54,7 @@ public class MyEditorConfiguration
     }
 }
 
-public class EditorResource
+public class EditorResource: Object
 {
 
 }

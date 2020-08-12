@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
-    
+using System.Linq;
+
 /**
  * Custom Editor window for editing the contents of chests or other items that have
  * an inventory.
@@ -14,6 +15,7 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
      */
 
     ItemResource itemResource;
+    ChestResource chestResource;
 
     // flag determining if chests will be cleared out before adding the selected items
     bool clearChestsOnAdd = false;
@@ -58,6 +60,7 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
     {
         itemAttributeResource = GetResource<ItemAttributeResource>();
         itemResource = GetResource<ItemResource>();
+        chestResource = GetResource<ChestResource>();
     }
 
     // Clear out and remake the list of items that can be selected
@@ -74,60 +77,29 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
     }
 
     // add all selected items to a single chest
-    private void AddSelectedToChest(Chest chest)
+    private void AddToChest(ChestResource.ChestSelectionMethod mode)
     {
-        // if specified, clear out the chest before adding new items
-        if (clearChestsOnAdd)
-        {
-            chest.ClearChest();
-        }
-
         // if user chose to select items by hand, simply add them
         if (selectItemsManually)
         {
+            List<InventoryItem> items = new List<InventoryItem>();
             // look at each item in possibleItems and check if it is selected
             for (int i = 0; i < itemResource.Items.Count; i++)
             {
                 if (itemSelectionChecklist[i])
                 {
                     // it's selected -- add it to the chest
-                    chest.AddToChest(itemResource.Items[i]);
+                    items.Add(itemResource.Items[i]);
                 }
             }
+
+            chestResource.AddToChests(mode, clearChestsOnAdd, items);
         }
         // if user chose to select by attribute, get items that fit those criteria
         else if (selectItemsByAttrib)
         {
-            // loop for each item to be added
-            for(int i = 0; i < numItems; i++)
-            {
-                // make a list to hold all the InventoryItem objects we find that match our criteria
-                List<InventoryItem> matchingItems = new List<InventoryItem>();
-
-                // look through every inventory item we know about
-                foreach (InventoryItem item in itemResource.Items)
-                {
-                    // get that thing
-                    System.Type selectedType = itemAttributeResource.ItemAttributeTypes[i];
-
-                    foreach (ItemAttribute attrib in item.attributes)
-                    {
-                        if (attrib != null && selectedType.Equals(attrib.GetType()))
-                        {
-                            matchingItems.Add(item);
-                        }
-                    }
-                }
-
-                chest.AddToChest(matchingItems[Random.Range(0, matchingItems.Count)]);
-            }
+            chestResource.AddToChests(mode, clearChestsOnAdd, attribSelections.Select(selection => itemAttributeResource.ItemAttributeTypes[selection]).ToList());
         }
-
-        // tell the editor that the object has been changed
-        // this prevents changes from disappearing when going into play mode
-        // I believe there is a more current way to do this, but I haven't figured it out yet
-        Undo.RecordObject(chest, "Chest Modify");
-        EditorUtility.SetDirty(chest);
 
     }
 
@@ -219,29 +191,13 @@ public class ChestEditorWindow : BaseCustomEditorWindow {
         // button for adding to all selected gameObjects
         if(GUILayout.Button("Add To Selected"))
         {
-            // look through all selected gameObjects
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                // check if this is a chest -- if so, add the selected items to it
-                Chest c = go.GetComponent<Chest>();
-                if (c != null)
-                {
-                    AddSelectedToChest(c);
-                }
-            }
+            AddToChest(ChestResource.ChestSelectionMethod.Selected);
         }
 
         // button for adding items to ALL chests, regardless of selection
         if (GUILayout.Button("Add to All Chests"))
         {
-            // find all chests in scene
-            Chest[] allChests = FindObjectsOfType<Chest>();
-
-            // add items to each chest
-            foreach (Chest c in allChests)
-            {
-                AddSelectedToChest(c);
-            }
+            AddToChest(ChestResource.ChestSelectionMethod.All);
         }
 
         EditorGUILayout.EndHorizontal();
