@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
@@ -34,9 +32,7 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
      * Member vars used for editing existing items.
      */
 
-    // item that is currently selected for editing
-    private InventoryItem selectedItem;
-
+    ItemResource itemResource;
     ItemAttributeResource itemAttributeResource;
 
 
@@ -57,6 +53,7 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
 
     protected override void ConstructInnerWindow()
     {
+        itemResource = GetResource<ItemResource>();
         itemAttributeResource = GetResource<ItemAttributeResource>();
     }
 
@@ -71,62 +68,6 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
         {
             attribSelectionChecklist.Add(false);
         }
-    }
-
-    /*
-     * Create an Inventory item with a given set of attributes and create
-     * necessary .asset files to store them in.
-     */
-    private void CreateNewItem()
-    {
-        // create the inventory item itself and name it properly
-        InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
-        newItem.itemName = newItemName;
-
-        // lists to hold attributes and their names for each attrib we will add
-        List<ItemAttribute> attribsToAdd = new List<ItemAttribute>();
-        List<string> attribsToAddNames = new List<string>();
-
-        // loop through our attrib selection menu
-        for (int j = 0; j < attribSelectionChecklist.Count; j++)
-        {
-            // if attrib checked, we will create an instance of that attrib
-            if (attribSelectionChecklist[j])
-            {
-                // get the type of the attribute
-                System.Type attribType = itemAttributeResource.ItemAttributeTypes[j];
-
-                // use reflection to make a version of ScriptableObject.CreateInstance that is specific to the type of the attrib
-                // we need this because these types are not known at runtime, so we can't use generics directly
-                // credit to Tim Robinson: https://stackoverflow.com/questions/3555056/how-should-i-call-the-generic-function-without-knowing-the-type-at-compile-time?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-                MethodInfo methodDefinition = typeof(ScriptableObject).GetMethod("CreateInstance", new System.Type[] { });
-                MethodInfo method = methodDefinition.MakeGenericMethod(attribType);
-
-                // add type and its name to a list
-                attribsToAdd.Add((ItemAttribute)method.Invoke(null, null));
-                attribsToAddNames.Add(attribType.ToString());
-            }
-        }
-
-        // tell the inventory item about its attributes
-        newItem.attributes = attribsToAdd;
-
-        // create a folder to put it in if it doesn't exist
-        if (!AssetDatabase.IsValidFolder("Assets/" + newItemName))
-        {
-            AssetDatabase.CreateFolder("Assets", newItemName);
-        }
-
-        // create the acutal asset and put it in the folder
-        AssetDatabase.CreateAsset(newItem, "Assets/" + newItemName + "/" + newItemName + ".asset");
-
-        // create the assets for each attribute in our list
-        for (int x = 0; x < attribsToAdd.Count; x++)
-        {
-            AssetDatabase.CreateAsset(attribsToAdd[x], "Assets/" + newItemName + "/" + newItemName + attribsToAddNames[x] + ".asset");
-        }
-
-        AssetDatabase.SaveAssets();
     }
 
     /*
@@ -159,7 +100,15 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
                 // button used to actually create the asset
                 if (GUILayout.Button("Create Item"))
                 {
-                    CreateNewItem();
+                    List<System.Type> selectedAttribs = new List<System.Type>();
+                    for(int j = 0; j < itemAttributeResource.ItemAttributeTypes.Count; j++)
+                    {
+                        if (attribSelectionChecklist[j])
+                        {
+                            selectedAttribs.Add(itemAttributeResource.ItemAttributeTypes[j]);
+                        }
+                    }
+                    itemResource.CreateNewItem(newItemName, selectedAttribs);
                     currentTab = EDIT_ITEM_TAB;
                 }
 

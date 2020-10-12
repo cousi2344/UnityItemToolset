@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -53,6 +54,58 @@ public class ItemResource : EditorResource
         }
 
         return matchingItems[Random.Range(0, matchingItems.Count)];
+    }
+
+    /**
+     * Create an Inventory item with a given set of attributes and create
+     * necessary .asset files to store them in.
+     */
+    public void CreateNewItem(string newItemName, List<System.Type> attributesToAdd)
+    {
+        // create the inventory item itself and name it properly
+        InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
+        newItem.itemName = newItemName;
+
+        // lists to hold attributes and their names for each attrib we will add
+        List<ItemAttribute> addedAttributes = new List<ItemAttribute>();
+        List<string> addedAttributeNames = new List<string>();
+
+        // loop through our attrib selection menu
+        for (int j = 0; j < attributesToAdd.Count; j++)
+        {
+            // get the type of the attribute
+            System.Type attribType = attributesToAdd[j];
+
+            // use reflection to make a version of ScriptableObject.CreateInstance that is specific to the type of the attrib
+            // we need this because these types are not known at runtime, so we can't use generics directly
+            // credit to Tim Robinson: https://stackoverflow.com/questions/3555056/how-should-i-call-the-generic-function-without-knowing-the-type-at-compile-time?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+            MethodInfo methodDefinition = typeof(ScriptableObject).GetMethod("CreateInstance", new System.Type[] { });
+            MethodInfo method = methodDefinition.MakeGenericMethod(attribType);
+
+            // add type and its name to a list
+            addedAttributes.Add((ItemAttribute)method.Invoke(null, null));
+            addedAttributeNames.Add(attribType.ToString());
+        }
+
+        // tell the inventory item about its attributes
+        newItem.attributes = addedAttributes;
+
+        // create a folder to put it in if it doesn't exist
+        if (!AssetDatabase.IsValidFolder("Assets/" + newItemName))
+        {
+            AssetDatabase.CreateFolder("Assets", newItemName);
+        }
+
+        // create the acutal asset and put it in the folder
+        AssetDatabase.CreateAsset(newItem, "Assets/" + newItemName + "/" + newItemName + ".asset");
+
+        // create the assets for each attribute in our list
+        for (int x = 0; x < addedAttributes.Count; x++)
+        {
+            AssetDatabase.CreateAsset(addedAttributes[x], "Assets/" + newItemName + "/" + newItemName + addedAttributeNames[x] + ".asset");
+        }
+
+        AssetDatabase.SaveAssets();
     }
 
     /**
