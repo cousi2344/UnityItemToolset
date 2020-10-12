@@ -116,12 +116,14 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
                 break;
 
             case EDIT_ITEM_TAB:
+                bool itemSelected = false;
                 foreach (Object obj in Selection.objects)
                 {
                     InventoryItem asItem = obj as InventoryItem;
                     if (asItem != null)
                     {
                         // we have an InventoryItem!
+                        itemSelected = true;
 
                         EditorGUILayout.LabelField(asItem.itemName, EditorStyles.boldLabel); // name of item
 
@@ -154,6 +156,10 @@ public class ItemEditorWindow : BaseCustomEditorWindow {
 
                         EditorGUI.indentLevel--;
                     }
+                }
+                if (!itemSelected)
+                {
+                    GUILayout.Label("Please select an item to edit from the Project window...");   
                 }
                 break;
 
