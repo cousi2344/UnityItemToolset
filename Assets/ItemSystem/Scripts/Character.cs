@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+ * Simple character controller for testing purposes
+ */
 public class Character : MonoBehaviour
 {
-    public float speed = 1f;
+    public float movementSpeed = 1f;
 
     private CharacterController characterController;
 
@@ -47,7 +50,7 @@ public class Character : MonoBehaviour
             totalMovement += Vector3.right;
         }
 
-        totalMovement *= speed;
+        totalMovement *= movementSpeed;
 
         characterController.Move(totalMovement);
     }
